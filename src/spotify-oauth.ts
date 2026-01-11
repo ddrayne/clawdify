@@ -73,23 +73,23 @@ function isWSL2(): boolean {
 export function isRemoteEnvironment(): boolean {
   // SSH session indicators
   if (
-    process.env.SSH_CLIENT ||
-    process.env.SSH_TTY ||
-    process.env.SSH_CONNECTION
+    process.env["SSH_CLIENT"] ||
+    process.env["SSH_TTY"] ||
+    process.env["SSH_CONNECTION"]
   ) {
     return true;
   }
 
   // Container/cloud environments
-  if (process.env.REMOTE_CONTAINERS || process.env.CODESPACES) {
+  if (process.env["REMOTE_CONTAINERS"] || process.env["CODESPACES"]) {
     return true;
   }
 
   // Linux without display (and not WSL which can use wslview)
   if (
     process.platform === "linux" &&
-    !process.env.DISPLAY &&
-    !process.env.WAYLAND_DISPLAY &&
+    !process.env["DISPLAY"] &&
+    !process.env["WAYLAND_DISPLAY"] &&
     !isWSL()
   ) {
     return true;

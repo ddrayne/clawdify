@@ -1,0 +1,57 @@
+{
+  "name": "clawdify",
+  "version": "1.0.0",
+  "description": "Comprehensive Spotify Web API skill for Clawdbot - OAuth authentication, playback control, library management, and music discovery",
+  "type": "module",
+  "main": "dist/spotify-oauth.js",
+  "types": "dist/spotify-oauth.d.ts",
+  "bin": {
+    "clawdify-auth": "./dist/spotify-oauth.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "test": "node --test tests/**/*.test.mjs",
+    "test:watch": "node --test --watch tests/**/*.test.mjs",
+    "lint": "eslint src scripts tests",
+    "format": "prettier --write \"**/*.{ts,mjs,md,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,mjs,md,json}\"",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "spotify",
+    "clawdbot",
+    "skill",
+    "api",
+    "music",
+    "playback",
+    "oauth",
+    "spotify-web-api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "scripts",
+    "SKILL.md",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "typescript": "^5.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/clawdify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/clawdify/issues"
+  },
+  "homepage": "https://developer.spotify.com/documentation/web-api"
+}
