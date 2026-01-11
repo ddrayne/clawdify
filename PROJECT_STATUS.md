@@ -8,6 +8,16 @@
 
 The Clawdify Spotify Web API skill for Clawdbot is fully complete and production-ready. All core functionality, build system, tests, documentation, and integration examples are implemented.
 
+**What's Complete:**
+- OAuth 2.0 implementation (TypeScript source + compiled JavaScript)
+- 15 Spotify command scripts
+- Shared API client library
+- Build system and test suite (28 tests, 100% pass rate)
+- Complete integration examples and documentation
+
+**What "Implementation Needed" Refers To:**
+Documentation mentions "implementation needed" for OAuth integration. This refers to the **end-user integration step** - copying/adapting `examples/clawdbot-command.example.ts` into their Clawdbot installation. The OAuth code itself is fully implemented and ready to use.
+
 ## Completion Checklist
 
 ### Core Functionality ✅

@@ -95,18 +95,25 @@ export SPOTIFY_CLIENT_SECRET="your-client-secret-here"
 
 ### 4. Authenticate
 
-Run the OAuth flow (implementation needed - integrate the OAuth command into clawdbot's command system):
+**OAuth implementation is complete and ready to use.**
 
-```bash
-# This will need to be integrated into clawdbot
-clawdbot auth spotify  # or similar command
-```
+To integrate the OAuth command into your Clawdbot installation:
 
-The OAuth flow will:
+1. **See the complete example**: `examples/clawdbot-command.example.ts`
+2. **Read the integration guide**: `INTEGRATION.md` has detailed instructions
+3. **Register the command** in your Clawdbot's command system
+4. **Run authentication**: `clawdbot auth-spotify` (or your chosen command name)
+
+The OAuth module (`dist/spotify-oauth.js`) provides:
+- `loginSpotifyVpsAware()` - Auto-detects local vs VPS/SSH environment
+- `loginSpotifyLocal()` - Local callback server on localhost:8888
+- `loginSpotifyManual()` - Manual URL paste for remote environments
+
+Once integrated, the OAuth flow will:
 - Open authorization URL in your browser (or show URL for VPS/SSH)
-- Request necessary permissions
+- Request necessary Spotify permissions
 - Save OAuth tokens to `~/.clawdbot/auth-profiles.json`
-- Auto-refresh tokens when expired
+- Auto-refresh tokens when expired (5-minute buffer)
 
 ## Usage
 
@@ -141,16 +148,20 @@ node scripts/devices.mjs
 
 ### OAuth Command Integration
 
-The OAuth command (`src/spotify-oauth.ts`) needs to be integrated into clawdbot's command system. It provides:
+**The OAuth implementation is complete.** The compiled module (`dist/spotify-oauth.js`) exports:
 
 - `loginSpotifyVpsAware()` - Main entry point, auto-detects environment
 - `loginSpotifyLocal()` - Local callback server mode
 - `loginSpotifyManual()` - Manual URL paste mode for VPS/SSH
 
-The command should:
-1. Get client credentials from config or environment
-2. Call `loginSpotifyVpsAware()` to run OAuth flow
-3. Store credentials in `auth-profiles.json` with profile ID `spotify:default`
+**To integrate into Clawdbot:**
+1. See `examples/clawdbot-command.example.ts` for a complete, ready-to-use command implementation
+2. Copy/adapt the example to your Clawdbot's command system
+3. The command should:
+   - Get client credentials from config or environment
+   - Call `loginSpotifyVpsAware()` to run OAuth flow
+   - Store credentials in `auth-profiles.json` with profile ID `spotify:default`
+4. See `INTEGRATION.md` for detailed integration patterns and examples
 
 ### Auth Profiles Storage
 

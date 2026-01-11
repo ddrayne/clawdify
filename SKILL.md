@@ -43,13 +43,17 @@ export SPOTIFY_CLIENT_SECRET="your-client-secret-here"
 
 ### 2. Authenticate
 
-Run the OAuth flow to authenticate (implementation needed - use the functions in `src/commands/spotify-oauth.ts`):
+**OAuth implementation is complete.** To integrate into Clawdbot:
 
-This will:
+1. Use the compiled OAuth module: `dist/spotify-oauth.js`
+2. See `examples/clawdbot-command.example.ts` for a complete command implementation
+3. See `INTEGRATION.md` for detailed integration instructions
+
+Once integrated and run, the OAuth flow will:
 - Open authorization URL in your browser (or show URL for VPS/SSH)
 - Request necessary permissions
-- Save OAuth tokens to `auth-profiles.json`
-- Auto-refresh tokens when expired
+- Save OAuth tokens to `~/.clawdbot/auth-profiles.json`
+- Auto-refresh tokens when expired (5-minute buffer)
 
 ## Playback Control
 
