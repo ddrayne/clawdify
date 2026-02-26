@@ -46,8 +46,13 @@ clawd-spotify/
 
 1. Go to https://developer.spotify.com/dashboard
 2. Create a new app
-3. Set redirect URI to: `http://localhost:8888/callback`
+3. Set redirect URI to: `http://127.0.0.1:8888/callback`
+
+   > **Note (Feb 2026):** Spotify no longer allows `localhost` as a redirect URI. Use `http://127.0.0.1:8888/callback` instead. The `localhost` form will return `INVALID_CLIENT: Invalid redirect URI` even if it appears to save.
+
 4. Copy your Client ID and Client Secret
+
+> **Feb 2026 API Changes:** Spotify introduced new Development Mode restrictions on February 11, 2026. New apps require the owner to have an active Spotify Premium subscription. Playback control endpoints may return HTTP 403 "Restriction violated" even when the command succeeds — this is a known quirk, do not retry on 403. See the [Spotify migration guide](https://developer.spotify.com/documentation/web-api/tutorials/february-2026-migration-guide) for details.
 
 ### 2. Install to Clawdbot
 
@@ -114,6 +119,56 @@ Once integrated, the OAuth flow will:
 - Request necessary Spotify permissions
 - Save OAuth tokens to `~/.clawdbot/auth-profiles.json`
 - Auto-refresh tokens when expired (5-minute buffer)
+
+#### Manual Auth Flow (VPS/VM without browser access)
+
+If your Clawdbot runs on a VPS or VM and you can't open a browser on the server, use this approach:
+
+1. **Start a local listener on your Mac/PC** (the machine with a browser):
+   ```bash
+   node -e "
+   const http = require('http');
+   const https = require('https');
+   const { URLSearchParams } = require('url');
+   const CLIENT_ID = 'YOUR_CLIENT_ID';
+   const CLIENT_SECRET = 'YOUR_CLIENT_SECRET';
+   const REDIRECT = 'http://127.0.0.1:8888/callback';
+   http.createServer((req, res) => {
+     const u = new URL(req.url, 'http://127.0.0.1:8888');
+     const code = u.searchParams.get('code');
+     if (!code) { res.end('no code'); return; }
+     const body = new URLSearchParams({ grant_type: 'authorization_code', code, redirect_uri: REDIRECT }).toString();
+     const auth = Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64');
+     const tokenReq = https.request('https://accounts.spotify.com/api/token', {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': 'Basic ' + auth, 'Content-Length': body.length }
+     }, (r) => { let d = ''; r.on('data', c => d += c); r.on('end', () => { const t = JSON.parse(d); console.log('ACCESS:', t.access_token); console.log('REFRESH:', t.refresh_token); res.end('Done'); process.exit(0); }); });
+     tokenReq.write(body); tokenReq.end();
+   }).listen(8888, '127.0.0.1', () => console.log('Ready at 127.0.0.1:8888'));
+   "
+   ```
+   > **zsh users:** Save to a `.js` file and run with `node yourfile.js` to avoid shell history expansion errors with `!`.
+
+2. **Open the auth URL** in your browser (replace `YOUR_CLIENT_ID` and adjust scopes as needed):
+   ```
+   https://accounts.spotify.com/authorize?client_id=YOUR_CLIENT_ID&response_type=code&redirect_uri=http%3A//127.0.0.1%3A8888/callback&scope=user-read-playback-state%20user-modify-playback-state%20user-read-currently-playing%20user-library-read%20playlist-read-private%20user-top-read%20user-read-recently-played
+   ```
+
+3. **After authorization**, your terminal prints `ACCESS:` and `REFRESH:` tokens. Save them to `~/.clawdbot/auth-profiles.json` on your server:
+   ```json
+   {
+     "profiles": {
+       "spotify:default": {
+         "type": "oauth",
+         "provider": "spotify",
+         "access": "YOUR_ACCESS_TOKEN",
+         "refresh": "YOUR_REFRESH_TOKEN",
+         "expires": 1234567890000
+       }
+     }
+   }
+   ```
+   > **Important:** Field names must be `access`, `refresh`, and `expires` (not camelCase variants).
 
 ## Usage
 
